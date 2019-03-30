@@ -1,143 +1,93 @@
-function Player(diceRoll, roundScore, totalScore) {
-  this.diceRoll= diceRoll;
-  this.roundScore= roundScore;
-  this.totalScore= totalScore;
+function Order() {
+  this.order = [];
 }
-var Player1;
-Player.prototype.Rollone = function () {
-  var number = Math.floor(6*Math.random())+1;
-  console.log(number)
-  if (number !== 1){
-
-    return [number, (this.roundScore += number)]
-  }  else if ( number === 1){
-
-    // this.resetRound();
-    alert("Ups! You got a ONE. Good luck next time!")
-    $(".hide1").addClass('display1Hide');
-    $(".hide2").removeClass('display1Hide');
-    $(".roll1").hide();
-    $(".roll2").show();
-
-    return [this.roundScore= 0, this.diceRoll=1];
+function PizzaOrder(size, crust, sauce, toppings) {
+  this.size = size;
+  this.crust = crust;
+  this.sauce = sauce;
+  this.toppings = toppings;
+}
+PizzaOrder.prototype.costOrder = function () {
+  if (this.toppings.length > 1) {
+    return this.size * 1.2 + (this.toppings.length - 1)
+  } else {
+    return this.size * 1.2;
   }
-
 }
-
-var Player2;
-Player.prototype.Rolltwo = function () {
-  var number = Math.floor(6*Math.random())+1;
-  console.log(number)
-  if (number !== 1){
-
-    return [number, (this.roundScore += number)]
-  }  else if ( number === 1){
-
-    // this.resetRound();
-    alert("Ups! You got a ONE. Good luck next time!")
-    $(".hide2").addClass('display1Hide');
-    $(".hide1").removeClass('display1Hide');
-    $(".roll2").hide();
-    $(".roll1").show();
-
-    return [this.roundScore= 0, this.diceRoll=1];
-  }
-
+Order.prototype.addToOrder = function (newItem) {
+  this.order.push(newItem)
 }
-
-Player.prototype.Hold = function (totalScore) {
- this.totalScore += this.roundScore
-  if (this.totalScore >= 100) {
-    $("#winner").show();
-     $("#gameArea").hide();
-     $(".hide1").removeClass('display1Hide');
-     $(".hide2").removeClass('display1Hide');
-    return  this.totalScore=0;
-
-  }
-  this.diceRoll= 0;
-  this.roundScore= 0;
-  return this.totalScore;
-
-
-
-}
-function resetRound() {
-
-  var shows = [$("#dice-roll1"), $("#round-score1"),$("#dice-roll2"), $("#round-score2")]
- shows.forEach(function(show) {
-   show.text(0);
-
- })
- $(".hide1").removeClass('display1Hide');
- $(".hide2").removeClass('display1Hide');
- $(".roll2").show();
- $(".roll1").show();
- this.totalScore = 0;
-};
-Player.prototype.resetGame = function() {
-  var showResults = [$("#dice-roll1"), $("#round-score1"),$("#dice-roll2"), $("#round-score2"), $("#score1"), $("#score2")]
- showResults.forEach(function(showResult) {
-   show.text(0);
- })
-};
-
-
-// interface logic
-$(document).ready(function() {
-  $(".rules").click(function() {
-    $("#rules").toggle();
-
+$(document).ready(function(){
+  // tabs functionality
+  $("#help-btn").click(function() {
+    $("#help").addClass('active show');
+    $("#pizza-form").removeClass('active show');
+    $("#side-form").removeClass('active show');
+    $("#drink-form").removeClass('active show');
+    $("#dessert-form").removeClass('active show');
   });
-  $("form").submit(function(event) {
+
+  $("#pizza-btn").click(function() {
+    $("#pizza-form").addClass('active show');
+    $("#help-form").removeClass('active show');
+    $("#side-form").removeClass('active show');
+    $("#drink-form").removeClass('active show');
+    $("#dessert-form").removeClass('active show');
+  });
+
+  $("#side-btn").click(function() {
+    $("#side-form").addClass('active show');
+    $("#help-form").removeClass('active show');
+    $("#pizza-form").removeClass('active show');
+    $("#drink-form").removeClass('active show');
+    $("#dessert-form").removeClass('active show');
+  });
+
+  $("#drink-btn").click(function() {
+    $("#drink-form").addClass('active show');
+    $("#help-form").removeClass('active show');
+    $("#pizza-form").removeClass('active show');
+    $("#side-form").removeClass('active show');
+    $("#dessert-form").removeClass('active show');
+  });
+
+  $("#dessert-btn").click(function() {
+    $("#dessert-form").addClass('active show');
+    $("#help-form").removeClass('active show');
+    $("#pizza-form").removeClass('active show');
+    $("#drink-form").removeClass('active show');
+    $("#side-form").removeClass('active show');
+  });
+
+  $("#form-pizza").submit(function(event) {
     event.preventDefault();
-    $("#rules").hide();
-    $("#gameArea").show();
-    $("#winner").hide();
-    $("#score2").text(this.totalScore= 0);
-    $("#score1").text(this.totalScore= 0);
 
-    resetRound();
+    var sizeInput = parseInt($("input:radio[name=size]:checked").val());
+    var crustInput = $("input:radio[name=crust]:checked").val();
+    var sauceInput = $("input:radio[name=sauce]:checked").val();
+    var toppingsInput = [];
+
+    $("input:checkbox[name=toppings]:checked").each(function(){
+     var toppings = $(this).val();
+     toppingsInput.push(toppings);
+   });
+   var newOrder = new Order();
+   var newPizza = new PizzaOrder(sizeInput, crustInput, sauceInput, toppingsInput);
+   newOrder.addToOrder(newPizza);
+   // Fix to get values only from newPizza or newOrder
+   $("span#size").text(newOrder.order[0].size);
+   // $("span#size").text(newPizza.size);
+   $("span#crust").text(newPizza.crust);
+   $("span#sauce").text(newPizza.sauce);
+   $("span#toppings").text(newPizza.toppings);
+   $("span#cost").text(newPizza.costOrder());
+   $("#btn-add").show();
+   $("#btn-pizza").hide();
+   // need to onClick(resetfields)
+   $("#btn-pizza").show();
+   window.location = 'Pizza-Order.html#jumpHere';
 
 
-    var player1 = $("input#name1").val();
-    $("#player1").text(player1);
-    var player2 = $("input#name2").val();
-    $("#player2").text(player2);
-    Player1 =  new Player ( 0 , 0 , 0);
-    Player2 =  new Player ( 0 , 0 , 0);
-    $(".roll1").click(function(){
-      Player1.diceRoll = Player1.Rollone();
-      $("#dice-roll1").text(Player1.diceRoll[0]);
-      $("#round-score1").text(Player1.roundScore);
 
-    });
-    $(".Hold1").click(function(){
-      Player1.totalScore = Player1.Hold();
-      $("#score1").text(Player1.totalScore);
-      $("#dice-roll1").text(Player1.diceRoll=0);
-      $("#round-score1").text(Player1.roundScore=0);
-      $(".hide1").addClass('display1Hide');
-      $(".hide2").removeClass('display1Hide');
-      $(".roll1").hide();
-      $(".roll2").show();
-    });
-
-    $(".roll2").click(function(){
-      Player2.diceRoll = Player2.Rolltwo();
-      $("#dice-roll2").text(Player2.diceRoll[0]);
-      $("#round-score2").text(Player2.roundScore);
-    });
-    $(".Hold2").click(function(){
-      Player2.totalScore = Player2.Hold(this.totalScore);
-      $("#score2").text(Player2.totalScore);
-      $("#dice-roll2").text(Player2.diceRoll=0);
-      $("#round-score2").text(Player2.roundScore=0);
-      $(".hide2").addClass('display1Hide');
-      $(".hide1").removeClass('display1Hide');
-      $(".roll2").hide();
-      $(".roll1").show();
-
-    });
   });
 });
